@@ -52,12 +52,12 @@ class UserCommands(commands.Cog):
     @commands.has_role(int(os.getenv('ADMIN')))
     async def add_karma(self, ctx, member: disnake.Member = None, amount: int = None):
         if member is None:
-            await ctx.send(f"{ctx.author}, укажите участника")
+            await ctx.send(f"{ctx.author.display_name}, укажите участника")
         else:
             if amount is None:
-                await ctx.send(f"{ctx.author}, укажите количество очков кармы")
+                await ctx.send(f"{ctx.author.display_name}, укажите количество очков кармы")
             elif amount < 1:
-                await ctx.send(f"{ctx.author}, укажите более 1")
+                await ctx.send(f"{ctx.author.display_name}, укажите более 1")
             else:
                 await self.db.update_member("UPDATE users SET karma = karma + ? WHERE id = ?", [amount, member.id])
                 karma = await self.db.get_user(member)
@@ -68,23 +68,23 @@ class UserCommands(commands.Cog):
         description="Убавление или удаление кармы"
     )
     @commands.has_role(int(os.getenv('ADMIN')))
-    async def delete_karma(self, ctx, member: disnake.Member, amount):
+    async def delete_karma(self, ctx, member: disnake.Member, amount: int = None):
         if member is None:
-            await ctx.send(f"{ctx.author}, укажите участника")
+            await ctx.send(f"{ctx.author.display_name}, укажите участника")
         else:
             if amount is None:
-                await ctx.send(f"{ctx.author}, укажите количество очков кармы")
-            elif amount == 'all':
+                await ctx.send(f"{ctx.author.display_name}, укажите количество очков кармы")
+            elif amount == 000:
                 await self.db.update_member("UPDATE users SET karma = ? WHERE id = ?",
                                             [0, member.id])
                 karma = await self.db.get_user(member)
                 await ctx.send(f"Карма {member.display_name} была успешно удалена!\n" \
                                f"""**Карма {member.display_name}**: {karma[2]}""")
             elif amount < 1:
-                await ctx.send(f"{ctx.author}, укажите более 1")
+                await ctx.send(f"{ctx.author.display_name}, укажите более 1")
             else:
                 await self.db.update_member("UPDATE users SET karma = karma - ? WHERE id = ?",
-                                            [int(amount), member.id])
+                                            [amount, member.id])
                 karma = await self.db.get_user(member)
                 await ctx.send(f"Карма {member.display_name} была успешно удалена!\n" \
                                f"""**Карма {member.display_name}**: {karma[2]}""")
